@@ -1,0 +1,101 @@
+( Maze for Robothon                               7-24-93
+
+( This is an experimental maze routine using behaviors.  It still
+( needs work, see MAZE4.FTH, this works using just instincts
+
+DISABLE
+
+FORGET STUB
+
+: STUB ;
+
+: INIT-MAZE
+
+ STOP
+ 16 rRM-TRIGGER SET
+ 16 rLM-TRIGGER SET
+ 22 TRIGGER-FACTOR ( WAS 18
+ 60 SUM-FACTOR
+ CALIBRATE
+ FORWARD
+ PVL rF-MASK SET
+;
+
+: FOLLOW-WALL
+
+  60 RIGHT SPEED
+  50 LEFT SPEED
+  FORWARD ;
+
+: BOTH-FRONT
+
+  ( LW-OBSTACLE SENSOR
+  ( RW-OBSTACLE SENSOR AND
+
+  LF-OBSTACLE SENSOR ( OR
+  RF-OBSTACLE SENSOR OR
+
+    IF
+      ." both front"
+      LEFT PIVOT
+      90 DEGREES
+      FORWARD
+      CLEAR-SENSORS
+    THEN
+   CALIBRATE
+   FOLLOW-WALL ;
+
+: TURN-FIND
+  LSF-OBSTACLE SENSOR
+
+    IF
+       CLEAR-SENSORS
+       ." turn find"
+       25 LEFT SPEED
+       60 RIGHT SPEED
+
+       BEGIN
+         LSF-OBSTACLE SENSOR
+       UNTIL
+       CLEAR-SENSORS
+    THEN
+  CLEAR-SENSORS
+  CALIBRATE
+  FOLLOW-WALL
+  ;
+
+: TURN-CORNER
+  rLSF-VALUE GET
+  7 <
+    IF
+      TURN-FIND
+      CLEAR-SENSORS
+    THEN
+  FOLLOW-WALL
+
+;
+: INIT-BEHAVIORS
+  DECIMAL
+  255 rSTALL-DELAY SET
+  0 rNO-STALLS SET
+  MULTITASKING
+( 0 rBUSY SET
+(  10 rINSTINCTS SET
+(  16 rMAX-INSTINCTS SET
+;
+
+: RUN-MAZE
+  INIT-MAZE
+  INIT-BEHAVIORS
+  FORWARD
+  ENABLE ;
+
+  CLEAR-TASKS
+  1 PRIORITY ADD-TASK: BOTH-FRONT
+  2 PRIORITY ADD-TASK: TURN-CORNER
+
+REMEMBER
+AUTO-START: RUN-MAZE
+
+
+
