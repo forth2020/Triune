@@ -6,7 +6,9 @@ complete manuals and  forth sources
 
 Thanks Don for all your effort ! 
 
+
 Table of Contents
+
 
 Dawn of Intelligent Machines 3
 
